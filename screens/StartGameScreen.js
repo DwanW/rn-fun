@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Keyboard, Alert } from 'react-native';
 import Card from '../components/Card';
 import Input from '../components/Input';
-import NumberContainer from '../components/NumberContainer'
+import NumberContainer from '../components/NumberContainer';
+import CustomButton from '../components/CustomButton';
 
 import colors from '../constants/colors';
+import defaultStyle from '../constants/default-styles';
 
 const StartGameScreen = ({onStartGame}) => {
     const [enteredValue, setEnteredValue] = useState('');
@@ -41,9 +43,11 @@ const StartGameScreen = ({onStartGame}) => {
     if (confirmed){{
         confirmedOutput = (
         <Card style={styles.summaryContainer}>
-            <Text>You selected</Text>
+            <Text style={defaultStyle.bodyText}>You selected</Text>
             <NumberContainer>{selectedNumber}</NumberContainer>
-            <Button title="Start Game" onPress={() => onStartGame(selectedNumber)} />
+            <CustomButton onPress={() => onStartGame(selectedNumber)}>
+                START GAME
+            </CustomButton>
         </Card>
         )
     }}
@@ -51,9 +55,9 @@ const StartGameScreen = ({onStartGame}) => {
     return (
         <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
             <View style={styles.screen}>
-                <Text style={styles.title}>Let's get started</Text>
+                <Text style={{...defaultStyle.titleText, ...styles.title}}>Let's get started</Text>
                 <Card style={styles.inputContainer}>
-                    <Text>Select a Integer</Text>
+                    <Text style={defaultStyle.bodyText}>Select a Integer</Text>
                     <Input
                         style={styles.input}
                         autoCorrect={false}
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        marginVertical: 10,
+        marginVertical: 10
     },
     inputContainer: {
         width: 300,

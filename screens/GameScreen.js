@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-
-import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Keyboard, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import NumberContainer from '../components/NumberContainer'
-import Card from '../components/Card';;
+import Card from '../components/Card';
+import CustomButton from '../components/CustomButton';
+
+import defaultStyle from '../constants/default-styles';
 
 const generateRandomBetween = (min, max, exclude) => {
     min = Math.ceil(min);
     max = Math.floor(max);
-    console.log(min, max)
+
     const randomNum = Math.floor(Math.random() * (max - min)) + min;
 
     if (randomNum === exclude){
@@ -17,17 +20,25 @@ const generateRandomBetween = (min, max, exclude) => {
     }
 }
 
+const renderListItem = (value, numOfRound) => (
+    <View key={value} style={styles.listItem}>
+        <Text style={defaultStyle.bodyText}>#{numOfRound}</Text>
+        <Text style={defaultStyle.bodyText}>{value}</Text>
+    </View>
+)
+
 const GameScreen = ({userChoice, onGameOver}) => {
-    const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(1, 99, userChoice))
-    const [rounds, setRounds] = useState(0)
+    const initialGuess = generateRandomBetween(1, 100, userChoice)
+    const [currentGuess, setCurrentGuess] = useState(initialGuess)
     const currentLow = useRef(1)
     const currentHigh = useRef(100)
+    const [pastGuesses, setPastGuesses] = useState([initialGuess])
 
     useEffect(() => {
         if(currentGuess === userChoice){
-            onGameOver(rounds)
+            onGameOver(pastGuesses.length)
         }
-    }, [currentGuess,userChoice, onGameOver ])
+    }, [pastGuesses, userChoice, onGameOver ])
 
     const nextGuessHandler = (direction) => {
         if(direction === 'lower' && currentGuess < userChoice || ( direction === 'greater' && currentGuess > userChoice)){
@@ -40,24 +51,34 @@ const GameScreen = ({userChoice, onGameOver}) => {
         }
 
         if (direction === 'lower') {
-            currentHigh.current = currentGuess
-
+            currentHigh.current = currentGuess;
         } else {
-            currentLow.current = currentGuess
+            currentLow.current = currentGuess + 1;
         }
 
         const nextNum = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess)
         setCurrentGuess(nextNum);
-        setRounds(rounds + 1)
+        setPastGuesses([nextNum, ...pastGuesses])
     }
     return (
     <View style={styles.screen}>
-        <Text>My Guess is </Text>
+        <Text style={defaultStyle.bodyText}>My Guess is </Text>
         <NumberContainer>{currentGuess}</NumberContainer>
         <Card style={styles.buttonContainer}>
-            <Button title="LOWER" onPress={() => nextGuessHandler('lower')} />
-            <Button title="Higher" onPress={() => nextGuessHandler('higher')} />
+            <CustomButton onPress={() => nextGuessHandler('lower')}>
+                <Ionicons name="md-remove" size={24} color="white" />
+            </CustomButton>
+            <CustomButton onPress={() => nextGuessHandler('greater')}>
+                <Ionicons name="md-add" size={24} color="white" />
+            </CustomButton>
         </Card>
+        <View style={styles.list}>
+            <ScrollView>
+                {
+                    pastGuesses.map((num, idx) => renderListItem(num, pastGuesses.length - idx))
+                }
+            </ScrollView>
+        </View>
     </View>
     )
 }
@@ -74,6 +95,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         width: 300,
         maxWidth: '80%'
+    },
+    list: {
+        width: '80%',
+        flex: 1
+    },
+    listItem: {
+        marginVertical: 10,
+        backgroundColor: 'white',
+        borderLeftColor: 'orange',
+        borderLeftWidth: 3,
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        width: '100%',
+        justifyContent:'space-around'
     }
 })
 

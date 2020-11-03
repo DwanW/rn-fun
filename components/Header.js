@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: 'black',
-        height: 90
+        height: 90,
+        fontFamily: 'open-sans-bold'
     }
 })
 
