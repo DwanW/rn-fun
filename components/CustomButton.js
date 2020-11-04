@@ -1,13 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native';
 import colors from '../constants/colors';
 
 const CustomButton = ({children, onPress}) => {
+    let ButtonComp = TouchableOpacity
+
+    if(Platform.OS === 'android' && Platform.Version >= 21){
+        ButtonComp = TouchableNativeFeedback
+    }
+
     return(
-        <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+        <ButtonComp onPress={onPress} activeOpacity={0.7}>
         <View style={styles.button}>
             <Text style={styles.buttonText}>{children}</Text></View>
-        </TouchableOpacity>
+        </ButtonComp>
     )
 }
 
